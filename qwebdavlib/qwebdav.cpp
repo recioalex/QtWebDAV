@@ -490,7 +490,8 @@ QNetworkReply* QWebdav::put(const QString& path, const QByteArray& data)
 
 QNetworkReply* QWebdav::propfind(const QString& path, const QWebdav::PropNames& props, int depth)
 {
-    QByteArray query;
+//    QByteArray query;
+    QString query;
 
     query = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
     query += "<D:propfind xmlns:D=\"DAV:\" >";
@@ -505,7 +506,7 @@ QNetworkReply* QWebdav::propfind(const QString& path, const QWebdav::PropNames& 
     }
     query += "</D:prop>";
     query += "</D:propfind>";
-    return propfind(path, query, depth);
+    return propfind(path, query.toUtf8(), depth);
 }
 
 
@@ -524,7 +525,8 @@ QNetworkReply* QWebdav::propfind(const QString& path, const QByteArray& query, i
 
 QNetworkReply* QWebdav::proppatch(const QString& path, const QWebdav::PropValues& props)
 {
-    QByteArray query;
+//    QByteArray query;
+    QString query;
 
     query = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
     query += "<D:proppatch xmlns:D=\"DAV:\" >";
@@ -548,7 +550,7 @@ QNetworkReply* QWebdav::proppatch(const QString& path, const QWebdav::PropValues
     query += "</D:prop>";
     query += "</D:propfind>";
 
-    return proppatch(path, query);
+    return proppatch(path, query.toUtf8());
 }
 
 QNetworkReply* QWebdav::proppatch(const QString& path, const QByteArray& query)
