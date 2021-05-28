@@ -58,7 +58,8 @@ QWebdavDirParser::QWebdavDirParser(QObject *parent) : QObject(parent)
   ,m_busy(false)
   ,m_abort(false)
 {
-    m_mutex.reset(new QMutex(QMutex::Recursive));
+//    m_mutex.reset(new QMutex(QMutex::Recursive));
+    m_mutex.reset(new QRecursiveMutex());
 }
 
 QWebdavDirParser::~QWebdavDirParser()
@@ -328,7 +329,8 @@ void QWebdavDirParser::parseMultiResponse(const QByteArray &data)
 
     }
 
-    qSort(m_dirList.begin(), m_dirList.end());
+//    qSort(m_dirList.begin(), m_dirList.end());
+    std::sort(m_dirList.begin(), m_dirList.end());
 }
 
 void QWebdavDirParser::parseResponse(const QDomElement &dom)
@@ -374,7 +376,8 @@ void QWebdavDirParser::davParsePropstats(const QString &path, const QDomNodeList
 #endif
 
     // name
-    QStringList pathElements = path_.split('/', QString::SkipEmptyParts);
+//    QStringList pathElements = path_.split('/', QString::SkipEmptyParts);
+    QStringList pathElements = path_.split('/', Qt::SkipEmptyParts);
     name = pathElements.isEmpty() ? "/" : pathElements.back();
 
     for ( int i = 0; i < propstats.count(); i++) {
