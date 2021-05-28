@@ -179,7 +179,7 @@ void QWebdav::replyFinished(QNetworkReply* reply)
 #endif
 
     disconnect(reply, SIGNAL(readyRead()), this, SLOT(replyReadyRead()));
-    disconnect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)));
+//    disconnect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)));
 
     QIODevice* dataIO = m_inDataDevices.value(reply, 0);
     if (dataIO != 0) {
