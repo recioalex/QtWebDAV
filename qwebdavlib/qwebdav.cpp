@@ -409,7 +409,7 @@ QNetworkReply* QWebdav::search(const QString& path, const QString& q )
 
 QNetworkReply* QWebdav::get(const QString& path)
 {
-    QNetworkRequest req;
+    QNetworkRequest req = buildRequest();
 
     QUrl reqUrl(m_baseUrl);
     reqUrl.setPath(absolutePath(path));
@@ -430,7 +430,7 @@ QNetworkReply* QWebdav::get(const QString& path, QIODevice* data)
 
 QNetworkReply* QWebdav::get(const QString& path, QIODevice* data, quint64 fromRangeInBytes)
 {
-    QNetworkRequest req;
+    QNetworkRequest req = buildRequest();
 
     QUrl reqUrl(m_baseUrl);
     reqUrl.setPath(absolutePath(path));
@@ -457,7 +457,7 @@ QNetworkReply* QWebdav::get(const QString& path, QIODevice* data, quint64 fromRa
 
 QNetworkReply* QWebdav::put(const QString& path, QIODevice* data)
 {
-    QNetworkRequest req;
+    QNetworkRequest req = buildRequest();
 
     QUrl reqUrl(m_baseUrl);
     reqUrl.setPath(absolutePath(path));
@@ -472,8 +472,8 @@ QNetworkReply* QWebdav::put(const QString& path, QIODevice* data)
 }
 
 QNetworkReply* QWebdav::put(const QString& path, const QByteArray& data)
-{  
-    QNetworkRequest req;
+{
+    QNetworkRequest req = buildRequest();
 
     QUrl reqUrl(m_baseUrl);
     reqUrl.setPath(absolutePath(path));
@@ -512,7 +512,7 @@ QNetworkReply* QWebdav::propfind(const QString& path, const QWebdav::PropNames& 
 
 QNetworkReply* QWebdav::propfind(const QString& path, const QByteArray& query, int depth)
 {
-    QNetworkRequest req;
+    QNetworkRequest req = buildRequest();
 
     QUrl reqUrl(m_baseUrl);
     reqUrl.setPath(absolutePath(path));
@@ -555,7 +555,7 @@ QNetworkReply* QWebdav::proppatch(const QString& path, const QWebdav::PropValues
 
 QNetworkReply* QWebdav::proppatch(const QString& path, const QByteArray& query)
 {
-    QNetworkRequest req;
+    QNetworkRequest req = buildRequest();
 
     QUrl reqUrl(m_baseUrl);
     reqUrl.setPath(absolutePath(path));
@@ -567,7 +567,7 @@ QNetworkReply* QWebdav::proppatch(const QString& path, const QByteArray& query)
 
 QNetworkReply* QWebdav::mkdir (const QString& path)
 {
-    QNetworkRequest req;
+    QNetworkRequest req = buildRequest();
 
     QUrl reqUrl(m_baseUrl);
     reqUrl.setPath(absolutePath(path));
@@ -579,7 +579,7 @@ QNetworkReply* QWebdav::mkdir (const QString& path)
 
 QNetworkReply* QWebdav::copy(const QString& pathFrom, const QString& pathTo, bool overwrite)
 {
-    QNetworkRequest req;
+    QNetworkRequest req = buildRequest();
 
     QUrl reqUrl(m_baseUrl);
     reqUrl.setPath(absolutePath(pathFrom));
@@ -603,7 +603,7 @@ QNetworkReply* QWebdav::copy(const QString& pathFrom, const QString& pathTo, boo
 
 QNetworkReply* QWebdav::move(const QString& pathFrom, const QString& pathTo, bool overwrite)
 {
-    QNetworkRequest req;
+    QNetworkRequest req = buildRequest();
 
     QUrl reqUrl(m_baseUrl);
     reqUrl.setPath(absolutePath(pathFrom));
@@ -627,7 +627,7 @@ QNetworkReply* QWebdav::move(const QString& pathFrom, const QString& pathTo, boo
 
 QNetworkReply* QWebdav::remove(const QString& path)
 {
-    QNetworkRequest req;
+    QNetworkRequest req = buildRequest();
 
     QUrl reqUrl(m_baseUrl);
     reqUrl.setPath(absolutePath(path));
@@ -635,4 +635,15 @@ QNetworkReply* QWebdav::remove(const QString& path)
     req.setUrl(reqUrl);
 
     return createRequest("DELETE", req);
+}
+
+QNetworkRequest QWebdav::buildRequest() {
+    QNetworkRequest req;
+    if (isSSL()) {
+        QString concatenated = m_username + ":" + m_password;
+        QByteArray data = concatenated.toLocal8Bit().toBase64();
+        QString headerData = "Basic " + data;
+        req.setRawHeader("Authorization", headerData.toLocal8Bit());
+    }
+    return req;
 }

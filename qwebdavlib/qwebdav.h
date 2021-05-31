@@ -143,6 +143,9 @@ protected:
 
     //! creates the absolute path from m_rootPath and relPath
     QString absolutePath(const QString &relPath);
+private:
+
+    QNetworkRequest buildRequest();
 
 private:
     QMap<QNetworkReply*, QIODevice*> m_outDataDevices;
