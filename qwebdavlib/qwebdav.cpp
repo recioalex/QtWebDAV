@@ -56,7 +56,7 @@ QWebdav::QWebdav (QObject *parent) : QNetworkAccessManager(parent)
   ,m_password()
   ,m_baseUrl()
   ,m_currentConnectionType(QWebdav::HTTP)
-  ,m_authenticator_lastReply(0)
+  ,m_authenticator_lastReply(nullptr)
   ,m_sslCertDigestMd5("")
   ,m_sslCertDigestSha1("")
 
@@ -160,12 +160,12 @@ void QWebdav::acceptSslCertificate(const QString &sslCertDigestMd5,
 
 void QWebdav::replyReadyRead()
 {
-    QNetworkReply* reply = qobject_cast<QNetworkReply*>(QObject::sender());
+    auto reply = qobject_cast<QNetworkReply*>(QObject::sender());
     if (reply->bytesAvailable() < 256000)
         return;
 
     QIODevice* dataIO = m_inDataDevices.value(reply, 0);
-    if(dataIO == 0)
+    if(dataIO == nullptr)
         return;
     dataIO->write(reply->readAll());
 }
@@ -197,15 +197,15 @@ void QWebdav::replyDeleteLater(QNetworkReply* reply)
 #endif
 
     QIODevice *outDataDevice = m_outDataDevices.value(reply, 0);
-    if (outDataDevice!=0)
+    if (outDataDevice!=nullptr)
         outDataDevice->deleteLater();
     m_outDataDevices.remove(reply);
 }
 
 void QWebdav::replyError(QNetworkReply::NetworkError)
 {
-    QNetworkReply* reply = qobject_cast<QNetworkReply*>(QObject::sender());
-    if (reply==0)
+    auto reply = qobject_cast<QNetworkReply*>(QObject::sender());
+    if (reply==nullptr)
         return;
 
 #ifdef DEBUG_WEBDAV
@@ -214,7 +214,7 @@ void QWebdav::replyError(QNetworkReply::NetworkError)
 
     if ( reply->error() == QNetworkReply::OperationCanceledError) {
         QIODevice* dataIO = m_inDataDevices.value(reply, 0);
-        if (dataIO!=0) {
+        if (dataIO!=nullptr) {
             delete dataIO;
             m_inDataDevices.remove(reply);
         }
@@ -239,7 +239,7 @@ void QWebdav::provideAuthenication(QNetworkReply *reply, QAuthenticator *authent
         reply->abort();
         emit errorChanged("WebDAV server requires authentication. Check WebDAV share settings!");
         reply->deleteLater();
-        reply=0;
+        reply=nullptr;
     }
 
     m_authenticator_lastReply = reply;
@@ -288,7 +288,7 @@ QByteArray QWebdav::hexToDigest(const QString &input)
 {
     QByteArray result;
     int i = 2;
-    int l = input.size();
+    int l = static_cast<int>(input.size());
     result.append(input.left(2).toLatin1());
     while ((i<l) && (input.at(i) == ':')) {
         ++i;
@@ -306,7 +306,7 @@ QString QWebdav::absolutePath(const QString &relPath)
 
 QNetworkReply* QWebdav::createRequest(const QString& method, QNetworkRequest& req, QIODevice* outgoingData)
 {
-    if(outgoingData != 0 && outgoingData->size() !=0) {
+    if(outgoingData != nullptr && outgoingData->size() !=0) {
         req.setHeader(QNetworkRequest::ContentLengthHeader, outgoingData->size());
         req.setHeader(QNetworkRequest::ContentTypeHeader, "text/xml; charset=utf-8");
     }
@@ -326,7 +326,7 @@ QNetworkReply* QWebdav::createRequest(const QString& method, QNetworkRequest& re
 
 QNetworkReply* QWebdav::createRequest(const QString& method, QNetworkRequest& req, const QByteArray& outgoingData )
 {
-    QBuffer* dataIO = new QBuffer;
+    auto dataIO = new QBuffer;
     dataIO->setData(outgoingData);
     dataIO->open(QIODevice::ReadOnly);
 
@@ -490,16 +490,16 @@ QNetworkReply* QWebdav::propfind(const QString& path, const QWebdav::PropNames& 
 //    QByteArray query;
     QString query;
 
-    query = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
-    query += "<D:propfind xmlns:D=\"DAV:\" >";
+    query = R"(<?xml version="1.0" encoding="utf-8" ?>)";
+    query += R"(<D:propfind xmlns:D="DAV:" >)";
     query += "<D:prop>";
-    foreach (QString ns, props.keys())
-    {
-        foreach (const QString key, props[ns])
+    for(const auto& ns: props.keys()) {
+        for(const auto& key: props[ns]) {
             if (ns == "DAV:")
                 query += "<D:" + key + "/>";
             else
                 query += "<" + key + " xmlns=\"" + ns + "\"/>";
+        }
     }
     query += "</D:prop>";
     query += "</D:propfind>";
@@ -525,10 +525,10 @@ QNetworkReply* QWebdav::proppatch(const QString& path, const QWebdav::PropValues
 //    QByteArray query;
     QString query;
 
-    query = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
-    query += "<D:proppatch xmlns:D=\"DAV:\" >";
+    query = R"(<?xml version="1.0" encoding="utf-8" ?>)";
+    query += R"(<D:proppatch xmlns:D="DAV:" >)";
     query += "<D:prop>";
-    foreach (QString ns, props.keys())
+    for (const auto& ns: props.keys())
     {
         QMap < QString , QVariant >::const_iterator i;
 

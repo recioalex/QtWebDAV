@@ -66,20 +66,20 @@ class QWEBDAVSHARED_EXPORT QWebdav : public QNetworkAccessManager
 public:
     enum QWebdavConnectionType {HTTP = 1, HTTPS};
 
-    QWebdav(QObject* parent = 0);
+    explicit QWebdav(QObject* parent = nullptr);
     ~QWebdav();
 
     typedef QMap<QString, QMap < QString, QVariant > > PropValues;
     typedef QMap<QString, QStringList > PropNames;
 
 
-    QString hostname() const;
-    int port() const;
-    QString rootPath() const;
-    QString username() const;
-    QString password() const;
-    QWebdavConnectionType connectionType() const;
-    bool isSSL() const;
+    [[nodiscard]] QString hostname() const;
+    [[nodiscard]] int port() const;
+    [[nodiscard]] QString rootPath() const;
+    [[nodiscard]] QString username() const;
+    [[nodiscard]] QString password() const;
+    [[nodiscard]] QWebdavConnectionType connectionType() const;
+    [[nodiscard]] bool isSSL() const;
 
     void setConnectionSettings( const QWebdavConnectionType connectionType,
                             const QString &hostname,

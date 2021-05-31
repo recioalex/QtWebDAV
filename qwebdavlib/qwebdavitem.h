@@ -74,13 +74,13 @@ public:
                 const QString &source);
 #endif
 
-    bool isDir() const;
-    QString path() const;
-    QString name() const;
-    QString ext() const;
-    QDateTime lastModified() const;
-    QString lastModifiedStr() const;
-    quint64 size() const;
+    [[nodiscard]] bool isDir() const;
+    [[nodiscard]] QString path() const;
+    [[nodiscard]] QString name() const;
+    [[nodiscard]] QString ext() const;
+    [[nodiscard]] QDateTime lastModified() const;
+    [[nodiscard]] QString lastModifiedStr() const;
+    [[nodiscard]] quint64 size() const;
 
 #ifdef QWEBDAVITEM_EXTENDED_PROPERTIES
     QString displayName() const;

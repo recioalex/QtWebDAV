@@ -69,7 +69,7 @@ class QWEBDAVSHARED_EXPORT QWebdavDirParser : public QObject
     Q_OBJECT
 
 public:
-    QWebdavDirParser(QObject *parent = 0);
+    explicit QWebdavDirParser(QObject *parent = nullptr);
     ~QWebdavDirParser();
 
     //! get all items of a collection
@@ -81,9 +81,9 @@ public:
     bool listItem(QWebdav *pWebdav, const QString &path);
 
     QList<QWebdavItem> getList();
-    bool isBusy() const;
-    bool isFinished() const;
-    QString path() const;
+    [[nodiscard]] bool isBusy() const;
+    [[nodiscard]] bool isFinished() const;
+    [[nodiscard]] QString path() const;
 
 signals:
     void finished();
