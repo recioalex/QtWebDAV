@@ -450,7 +450,7 @@ QNetworkReply* QWebdav::get(const QString& path, QIODevice* data, quint64 fromRa
     QNetworkReply* reply = QNetworkAccessManager::get(req);
     m_inDataDevices.insert(reply, data);
     connect(reply, SIGNAL(readyRead()), this, SLOT(replyReadyRead()));
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)));
+    connect(reply, &QNetworkReply::errorOccurred, this, &QWebdav::replyError);
 
     return reply;
 }
