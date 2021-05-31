@@ -62,10 +62,8 @@ QWebdav::QWebdav (QObject *parent) : QNetworkAccessManager(parent)
 
 {
     qRegisterMetaType<QNetworkReply*>("QNetworkReply*");
-
-    connect(this, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
-    connect(this, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)), this, SLOT(provideAuthenication(QNetworkReply*,QAuthenticator*)));
-    connect(this, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)), this, SLOT(sslErrors(QNetworkReply*,QList<QSslError>)));
+    connect(this, &QWebdav::finished, this, &QWebdav::replyFinished);
+    connect(this, &QWebdav::authenticationRequired, this, &QWebdav::provideAuthenication);
 }
 
 QWebdav::~QWebdav()
@@ -177,9 +175,8 @@ void QWebdav::replyFinished(QNetworkReply* reply)
 #ifdef DEBUG_WEBDAV
     qDebug() << "QWebdav::replyFinished()";
 #endif
-
-    disconnect(reply, SIGNAL(readyRead()), this, SLOT(replyReadyRead()));
-//    disconnect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)));
+    disconnect(reply, &QNetworkReply::redirectAllowed, this, &QWebdav::replyReadyRead);
+    disconnect(reply, &QNetworkReply::errorOccurred, this, &QWebdav::replyError);
 
     QIODevice* dataIO = m_inDataDevices.value(reply, 0);
     if (dataIO != 0) {
@@ -449,7 +446,7 @@ QNetworkReply* QWebdav::get(const QString& path, QIODevice* data, quint64 fromRa
 
     QNetworkReply* reply = QNetworkAccessManager::get(req);
     m_inDataDevices.insert(reply, data);
-    connect(reply, SIGNAL(readyRead()), this, SLOT(replyReadyRead()));
+    connect(reply, &QNetworkReply::readyRead, this, &QWebdav::replyReadyRead);
     connect(reply, &QNetworkReply::errorOccurred, this, &QWebdav::replyError);
 
     return reply;
