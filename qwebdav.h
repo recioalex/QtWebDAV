@@ -66,6 +66,8 @@ class QWEBDAVSHARED_EXPORT QWebdav : public QNetworkAccessManager
 
 public:
     enum QWebdavConnectionType {HTTP = 1, HTTPS};
+    enum QWebdavLockScope {LOCK_SCOPE_EXCLUSIVE, LOCK_SCOPE_SHARED};
+    enum QWebdavLockDepth {LOCK_DEPTH_ZERO, LOCK_DEPTH_INFINITY};
 
     explicit QWebdav(QObject* parent = nullptr);
     ~QWebdav();
@@ -118,7 +120,10 @@ public:
     QNetworkReply* proppatch(const QString& path, const QWebdav::PropValues& props);
     QNetworkReply* proppatch(const QString& path, const QByteArray& query);
 
-    /* TODO lock, unlock */
+    /* if secs is < 0 then lock timeout will be Infinite */
+    /* if token is not empty then lock will be refreshed */
+    QNetworkReply* lock(const QString& path, qint64 secs, const QString& token = QString(), QWebdavLockScope scope = LOCK_SCOPE_EXCLUSIVE, QWebdavLockDepth depth = LOCK_DEPTH_ZERO, const QString& owner = QString());
+    QNetworkReply* unlock(const QString& path, const QString& token);
 
     //! converts a digest from QByteArray to hexadecimal format ( XX:XX:XX:... with X in [0-9,A-F] )
     static QString digestToHex(const QByteArray &input);
