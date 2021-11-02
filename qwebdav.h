@@ -53,6 +53,7 @@
 
 #include <QtCore>
 #include <QtNetwork>
+#include <QDateTime>
 
 #include "qwebdav_global.h"
 
@@ -103,8 +104,8 @@ public:
     QNetworkReply* get(const QString& path, QIODevice* data);
     QNetworkReply* get(const QString& path, QIODevice* data, quint64 fromRangeInBytes);
 
-    QNetworkReply* put(const QString& path, QIODevice* data);
-    QNetworkReply* put(const QString& path, const QByteArray& data );
+    QNetworkReply* put(const QString& path, QIODevice* data, const QDateTime& dt = QDateTime());
+    QNetworkReply* put(const QString& path, const QByteArray& data, const QDateTime& dt = QDateTime());
 
     QNetworkReply* mkdir(const QString& dir );
     QNetworkReply* copy(const QString& pathFrom, const QString& pathTo, bool overwrite = false);

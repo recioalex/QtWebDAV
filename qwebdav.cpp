@@ -452,7 +452,7 @@ QNetworkReply* QWebdav::get(const QString& path, QIODevice* data, quint64 fromRa
     return reply;
 }
 
-QNetworkReply* QWebdav::put(const QString& path, QIODevice* data)
+QNetworkReply* QWebdav::put(const QString& path, QIODevice* data, const QDateTime& dt)
 {
     QNetworkRequest req = buildRequest();
 
@@ -461,14 +461,19 @@ QNetworkReply* QWebdav::put(const QString& path, QIODevice* data)
 
     req.setUrl(reqUrl);
 
+    if (dt.isValid()) {
+        QLocale us(QLocale::English, QLocale::UnitedStates);
+        req.setRawHeader("Date", us.toString(dt.toUTC(), "ddd, dd MMM yyyy hh:mm:ss").toUtf8());
+    }
+
 #ifdef DEBUG_WEBDAV
-    qDebug() << "QWebdav::put() url = " << req.url().toString(QUrl::RemoveUserInfo);
+    qDebug() << "QWebdav::put() url = " << req.url().toString(QUrl::RemoveUserInfo) << " date = " << req.rawHeader("Date");
 #endif
 
     return QNetworkAccessManager::put(req, data);
 }
 
-QNetworkReply* QWebdav::put(const QString& path, const QByteArray& data)
+QNetworkReply* QWebdav::put(const QString& path, const QByteArray& data, const QDateTime& dt)
 {
     QNetworkRequest req = buildRequest();
 
@@ -477,8 +482,13 @@ QNetworkReply* QWebdav::put(const QString& path, const QByteArray& data)
 
     req.setUrl(reqUrl);
 
+    if (dt.isValid()) {
+        QLocale us(QLocale::English, QLocale::UnitedStates);
+        req.setRawHeader("Date", us.toString(dt.toUTC(), "ddd, dd MMM yyyy hh:mm:ss").toUtf8());
+    }
+
 #ifdef DEBUG_WEBDAV
-    qDebug() << "QWebdav::put() url = " << req.url().toString(QUrl::RemoveUserInfo);
+    qDebug() << "QWebdav::put() url = " << req.url().toString(QUrl::RemoveUserInfo) << " date = " << req.rawHeader("Date");
 #endif
 
     return QNetworkAccessManager::put(req, data);
