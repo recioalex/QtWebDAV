@@ -466,6 +466,8 @@ QNetworkReply* QWebdav::put(const QString& path, QIODevice* data, const QDateTim
     if (dt.isValid()) {
         QLocale us(QLocale::English, QLocale::UnitedStates);
         req.setRawHeader("Date", us.toString(dt.toUTC(), "ddd, dd MMM yyyy hh:mm:ss").toUtf8());
+        req.setRawHeader("X-OC-MTime", QString::number(dt.toSecsSinceEpoch()).toUtf8());
+
     }
 
 #ifdef DEBUG_WEBDAV
@@ -487,6 +489,8 @@ QNetworkReply* QWebdav::put(const QString& path, const QByteArray& data, const Q
     if (dt.isValid()) {
         QLocale us(QLocale::English, QLocale::UnitedStates);
         req.setRawHeader("Date", us.toString(dt.toUTC(), "ddd, dd MMM yyyy hh:mm:ss").toUtf8());
+        req.setRawHeader("X-OC-MTime", QString::number(dt.toSecsSinceEpoch()).toUtf8());
+
     }
 
 #ifdef DEBUG_WEBDAV
